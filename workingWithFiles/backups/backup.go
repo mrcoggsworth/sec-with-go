@@ -1,9 +1,9 @@
 package main
 
 import (
-	"../../../../../../../go/src/github.com/Datadog/zstd"
 	"archive/tar"
 	"fmt"
+	"github.com/Datadog/zstd"
 	"io"
 	"log"
 	"os"
