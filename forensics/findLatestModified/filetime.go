@@ -3,40 +3,34 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"math"
-	"os"
 	"path/filepath"
 	"sort"
 	"time"
+	"os"
 )
 
 type FilesFound struct {
 	FullPath  string
-	Info      os.FileInfo
+	Name      string
 	TimeStamp time.Time
 }
 
 func main() {
 
 	target := os.Args[1]
+
 	var filesList []FilesFound
 
 	filesList = getTreeRecursive(target, filesList)
 
 	sort.SliceStable(filesList, func(i, j int) bool {
-		return filesList[i].Info.Size() > filesList[j].Info.Size()
+		return filesList[i].TimeStamp.After(filesList[j].TimeStamp)
 	})
 
 	for _, file := range filesList {
-		fiSizeKB := math.Round((float64(file.Info.Size()) / 1024))
-		fiSizeMB := (float64(file.Info.Size()) / 1024)/1024
-		fiSizeGB := (float64((file.Info.Size()) / 1024)/1024)/1024
 
 		fmt.Printf("\nPath: \t\t%v", file.FullPath)
-		fmt.Printf("\nName: \t\t%v", file.Info.Name())
-		fmt.Printf("\nSize(KB): \t%v", fiSizeKB)
-		fmt.Printf("\nSize(MB): \t%.2f", fiSizeMB)
-		fmt.Printf("\nSize(GB): \t%.2f", fiSizeGB)
+		fmt.Printf("\nName: \t\t%v", file.Name)
 		fmt.Printf("\nTimestamp: \t%v\n", file.TimeStamp)
 	}
 
@@ -61,7 +55,7 @@ func getTreeRecursive(path string, list []FilesFound) []FilesFound {
 
 			item := &FilesFound{
 				FullPath:  fullPath,
-				Info:      dir,
+				Name:      dir.Name(),
 				TimeStamp: dir.ModTime(),
 			}
 
